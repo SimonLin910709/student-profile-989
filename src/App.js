@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import './App.scss';
 
 class Student extends Component {
@@ -22,6 +24,12 @@ class Student extends Component {
     this.setState({ searchName: event.target.value });
   }
 
+  onStudentCollapse = (index) => {
+    const { studentList } = this.state;
+    studentList[index].collapse = !studentList[index].collapse;
+    this.setState({ studentList });
+  }
+
   getStudentAverage = (student) => {
     let sum = 0;
     student.grades.forEach(value => sum += Number(value));
@@ -43,19 +51,34 @@ class Student extends Component {
           <input placeholder="Search by name" value={searchName} onChange={this.onChangeSearchName} />
         </div>
         <div className="student-list">
-          {
-            this.getStudentList().map(student =>
-              <div className="student" key={student.id}>
-                <img src={student.pic} className="avatar" alt={student.id} />
-                <div className="content">
-                  <div className="name">{`${student.firstName} ${student.lastName}`}</div>
-                  <div className="email">Email: {student.email}</div>
-                  <div className="company">Company: {student.company}</div>
-                  <div className="skill">Skill: {student.skill}</div>
-                  <div className="average">Average: {this.getStudentAverage(student)}%</div>
-                </div>
+          {this.getStudentList().map((student, index) =>
+            <div className="student" key={student.id}>
+              <img src={student.pic} className="avatar" alt={student.id} />
+              <div className="content">
+                <div className="name">{`${student.firstName} ${student.lastName}`}</div>
+                <div className="email">Email: {student.email}</div>
+                <div className="company">Company: {student.company}</div>
+                <div className="skill">Skill: {student.skill}</div>
+                <div className="average">Average: {this.getStudentAverage(student)}%</div>
+
+                {
+                  student.collapse &&
+                  <>
+                    <div className="space" />
+                    {student.grades.map((grade, index) =>
+                      <div className="test" key={`${student.id}-${index}`}>
+                        Test {index}:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{grade}%
+                      </div>
+                    )}
+                  </>
+                }
               </div>
-            )}
+
+              <button className="btn-collapse" onClick={() => this.onStudentCollapse(index)}>
+                <FontAwesomeIcon icon={faPlus} />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );
