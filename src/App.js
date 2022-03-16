@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'
+import $ from 'jquery';
 import './App.scss';
 
 class Student extends Component {
@@ -8,7 +9,8 @@ class Student extends Component {
     super(props);
     this.state = {
       studentList: [],
-      searchName: ''
+      searchName: '',
+      searchTag: ''
     };
   }
 
@@ -24,10 +26,28 @@ class Student extends Component {
     this.setState({ searchName: event.target.value });
   }
 
+  onChangeSearchTag = (event) => {
+    this.setState({ searchTag: event.target.value });
+  }
+
   onStudentCollapse = (index) => {
     const { studentList } = this.state;
     studentList[index].collapse = !studentList[index].collapse;
     this.setState({ studentList });
+  }
+
+  onAddTag = (event, index) => {
+    if (event.key !== 'Enter') return;
+
+    const { studentList } = this.state;
+    const tag = $(`#addtag-${studentList[index].id}`).val();
+    if (!tag) return;
+
+    const tags = (studentList[index].tags || []);
+    tags.push(tag);
+    studentList[index].tags = tags;
+    this.setState({ studentList });
+    $(`#addtag-${studentList[index].id}`).val('');
   }
 
   getStudentAverage = (student) => {
@@ -37,18 +57,28 @@ class Student extends Component {
   }
 
   getStudentList = () => {
-    const { studentList, searchName } = this.state;
-    if (!searchName) return studentList;
-    return studentList.filter(item => item.firstName.includes(searchName) || item.lastName.includes(searchName));
+    const { studentList, searchName, searchTag } = this.state;
+    let result = studentList;
+    if (searchName) {
+      result = result.filter(student => student.firstName.includes(searchName) || student.lastName.includes(searchName));
+    }
+    if (searchTag) {
+      result = result.filter(student => (student.tags || []).filter(tag => tag.includes(searchTag)).length !== 0);
+    }
+
+    return result;
   }
 
   render() {
-    const { searchName } = this.state;
+    const { searchName, searchTag } = this.state;
 
     return (
       <div className="student-content">
         <div className="search-input-content">
           <input placeholder="Search by name" value={searchName} onChange={this.onChangeSearchName} />
+        </div>
+        <div className="search-input-content">
+          <input placeholder="Search by tag" value={searchTag} onChange={this.onChangeSearchTag} />
         </div>
         <div className="student-list">
           {this.getStudentList().map((student, index) =>
@@ -65,17 +95,26 @@ class Student extends Component {
                   student.collapse &&
                   <>
                     <div className="space" />
-                    {student.grades.map((grade, index) =>
-                      <div className="test" key={`${student.id}-${index}`}>
-                        Test {index}:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{grade}%
+                    {student.grades.map((grade, index1) =>
+                      <div className="test" key={`${student.id}-${index1}`}>
+                        Test {index1 + 1}:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{grade}%
                       </div>
                     )}
                   </>
                 }
+
+                <div className="tag-list">
+                  {(student.tags || []).map((tag, index1) =>
+                    <div className="tag" key={`tag-${student.id}-${index1}`}>
+                      {tag}
+                    </div>
+                  )}
+                </div>
+                <input className="input-tag" id={`addtag-${student.id}`} placeholder="Add a tag" onKeyDown={(event) => this.onAddTag(event, index)} />
               </div>
 
               <button className="btn-collapse" onClick={() => this.onStudentCollapse(index)}>
-                <FontAwesomeIcon icon={faPlus} />
+                <FontAwesomeIcon icon={student.collapse ? faMinus : faPlus} />
               </button>
             </div>
           )}

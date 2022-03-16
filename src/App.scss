@@ -35,6 +35,7 @@
             .content {
                 flex          : 1;
                 display       : flex;
+                align-items   : flex-start;
                 flex-direction: column;
                 margin-left   : 35px;
 
@@ -60,6 +61,25 @@
 
                 .space {
                     height: 15px;
+                }
+
+                .tag-list {
+                    display     : flex;
+                    flex-wrap   : wrap;
+                    gap         : 10px;
+                    margin-top  : 10px;
+                    padding-left: 20px;
+
+                    .tag {
+                        padding         : 10px;
+                        background-color: #dcdcdc;
+                        border-radius   : 5px;
+                    }
+                }
+
+                .input-tag {
+                    margin   : 10px 0 0 20px;
+                    font-size: 14px;
                 }
             }
 
@@ -87,18 +107,21 @@
         padding: 10px;
 
         input {
-            font-size    : 18px;
-            outline      : none;
-            border-bottom: 2px solid #e3e2e2;
-            border-top   : 0;
-            border-left  : 0;
-            border-right : 0;
-            flex         : 1;
-            padding      : 10px 0;
+            font-size: 18px;
+            flex     : 1;
+        }
+    }
 
-            &:focus {
-                border-color: #6a6a6a;
-            }
+    input {
+        outline      : none;
+        border-bottom: 2px solid #e3e2e2;
+        border-top   : 0;
+        border-left  : 0;
+        border-right : 0;
+        padding      : 10px 0;
+
+        &:focus {
+            border-color: #6a6a6a;
         }
     }
 }
